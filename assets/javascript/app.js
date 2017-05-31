@@ -34,11 +34,10 @@ var currentQuestion = 0;
 
 var currentAnswer;
 currentAnswer = (questionBank[currentQuestion].answer);
+
 console.log("current Answer: ", currentAnswer);
 
-var currentChoices;
-wrongChoices[currentQuestion].push(currentAnswer); //place the answer inside of the choices array
-    console.log("choices with a: ", wrongChoices);
+
 var questionTime = 15;
 var answerTime = 7;
 var myInterval;
@@ -89,6 +88,11 @@ $(".btn").on("click", function(){
 function questionnaire () {
     
    $("#question").append(questionBank[currentQuestion].question); //includes the question into the question section in the html
+    
+   
+    wrongChoices[currentQuestion].push('<span id = "answerId">' + currentAnswer + '</span>');
+    
+    
     for (var i = 0; i <wrongChoices.length; i++) {
         $("#choices").append('<p class = "myClickableClass">' + wrongChoices[i] +'</p><br>');
     
@@ -97,15 +101,22 @@ function questionnaire () {
     }
     console.log("for loop: ", wrongChoices[i]);
     
+    $(".myClickableClass").on("click", function () {
+    if(!hasChosen) {
+        if($(this).attr("id") === "answerId") {
+            $("#question").html("<h2>You are correct</h2>");
+            rightAnswers++;
+        }else {
+            $("#question").html("<h2>You are wrong</h2>");
+            wrongAnswers++;
+        }
+        hasChosen = true;
+    }
+}) 
+    
 };
 
-//$(".myClickableClass").on("click" function () {
-//    if(!hasChosen) {
-//        //if this choiceArray[i] is the qAnswerArray[currentQuestion].answer then $("#question").text("<h2>You are correct</h2>") and rightAnswer++;
-//        if($(.this).)
-//        //else if choiceArray[i] $("#question").text("<h2>You are wrong</h2>") and wrongAnswer++;
-//    }
-//}); 
+
 
 
 
