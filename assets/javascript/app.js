@@ -29,7 +29,16 @@ var unanswered = 0;
 
 //boolean 
 var hasChosen = false;
+//count my questions
+var currentQuestion = 0;
 
+var currentAnswer;
+currentAnswer = (questionBank[currentQuestion].answer);
+console.log("current Answer: ", currentAnswer);
+
+var currentChoices;
+wrongChoices[currentQuestion].push(currentAnswer); //place the answer inside of the choices array
+    console.log("choices with a: ", wrongChoices);
 var questionTime = 15;
 var answerTime = 7;
 var myInterval;
@@ -37,12 +46,19 @@ var myInterval;
 var myCount;
 myCount = 0;
 
+//callling the timer function to begin once the button is clicked
+$(".btn").on("click", function(){
+    myInterval = setInterval(timer, 1000, questionTime);
+    questionnaire();
+    
+});
+
     function timer (stopTime) {
         //place the title and myCount to appear
       $("#timeRemaining").html("<h2>Time Remaining: </h2>" + myCount);
-        
+
         //insert function for picking and placing questions and choices
-        
+
         if(myCount === stopTime) {
             clearInterval(myInterval);
             //show next question
@@ -50,9 +66,10 @@ myCount = 0;
             var myTime;
             if(stopTime === questionTime) {
                 myTime = answerTime;
-                
+
                 //to ensure to only click on one answer use the boolean "hasChosen = false;"
-                //if user has cliked the right answer, then show text that he is right and rightAnswers++;
+                //if user has cliked the right answer, then show text that he is right 
+
                 //if user has cliked on the choices that are not the right answer, then show text that he is wrong and wrongAnswers++;
                 //else if he has not clicked on any choice at all tell he is did not answer and unanswered++;
                 //after that if statement change the boolean to "hasChosen === true"
@@ -64,29 +81,31 @@ myCount = 0;
         }else {
             myCount++;
         }
-        
+
     };
-
-//callling the timer function to begin once the button is clicked
-$(".btn").on("click", function(){
-    myInterval = setInterval(timer, 1000, questionTime);
-    questionnaire(questionBank, wrongChoices);
     
-});
 
-function questionnaire (qAnswerArray, choicesArray) {
+
+function questionnaire () {
     
-    for( var i = 0; i< 5; i++) {
-        
-        $("#question").append(qAnswerArray[i].question);//place question into the question area
-        choicesArray[i].push(qAnswerArray[i].answer); //include the answer choice inside of the wrong choices array 
-        $("#choices").append(choicesArray[i]);//place those choices (including the answer) here
+   $("#question").append(questionBank[currentQuestion].question); //includes the question into the question section in the html
+    for (var i = 0; i <wrongChoices.length; i++) {
+        $("#choices").append('<p class = "myClickableClass">' + wrongChoices[i] +'</p><br>');
+    
         break;
+        
     }
-    
+    console.log("for loop: ", wrongChoices[i]);
     
 };
 
+//$(".myClickableClass").on("click" function () {
+//    if(!hasChosen) {
+//        //if this choiceArray[i] is the qAnswerArray[currentQuestion].answer then $("#question").text("<h2>You are correct</h2>") and rightAnswer++;
+//        if($(.this).)
+//        //else if choiceArray[i] $("#question").text("<h2>You are wrong</h2>") and wrongAnswer++;
+//    }
+//}); 
 
 
 
