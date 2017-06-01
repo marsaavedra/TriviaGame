@@ -11,11 +11,11 @@
   ]
   
 var wrongChoices = [
-    ["Sir Davos", "Arya Stark", "Tyrion Lannister"],
-    ["Jaime Lannister", "Sansa Stark", "Jon Snow"],
-    ["Jaime Lannister", "Sir Davos", "Robert Boratheon"],
-    ["Kaitlin Stark", "Cercei Lannister", "Brienne of Tarth"],
-    ["Hodor", "Robb Stark", "Rhaegar Targaryen"]
+    ["Sir Davos","Melisandre", "Arya Stark", "Tyrion Lannister"],
+    ["Jaime Lannister", "Sansa Stark", "Olenna Tyrell", "Jon Snow"],
+    ["Jaime Lannister", "Sir Davos", "Robert Boratheon", "Ned Stark"],
+    ["Kaitlin Stark", "Cercei Lannister", "Lyanna Stark", "Brienne of Tarth"],
+    ["Hodor", "Tyrionne Lannister", "Robb Stark", "Rhaegar Targaryen"]
   ]
 
 
@@ -32,53 +32,74 @@ var hasChosen = false;
 //count my questions
 var currentQuestion = 0;
 
-var currentAnswer;
-currentAnswer = (questionBank[currentQuestion].answer);
 
-console.log("current Answer: ", currentAnswer);
-
-
-var questionTime = 15;
-var answerTime = 7;
+var questionTime = 7;
+var answerTime = 2;
 var myInterval;
 
 var myCount;
 myCount = 0;
 
-//callling the timer function to begin once the button is clicked
-$(".btn").on("click", function(){
+function button () {
+    $(".btn").on("click", function(){
     myInterval = setInterval(timer, 1000, questionTime);
     questionnaire();
-    
-});
+    $(".btn").hide();//hide after clicked
+})
+};
+
+button();
+//callling the timer function to begin once the button is clicked
+//$(".btn").on("click", function(){
+//    myInterval = setInterval(timer, 1000, questionTime);
+//    questionnaire();
+//    $(".btn").hide();//hide after clicked
+//});
 
     function timer (stopTime) {
         //place the title and myCount to appear
       $("#timeRemaining").html("<h2>Time Remaining: </h2>" + myCount);
-
-        //insert function for picking and placing questions and choices
-
+        
+    
         if(myCount === stopTime) {
             clearInterval(myInterval);
-            //show next question
-            //restart timer
             var myTime;
-            if(stopTime === questionTime) {
+            if(stopTime === questionTime) {//this is happens if no choice was clicked
                 myTime = answerTime;
-
-                //to ensure to only click on one answer use the boolean "hasChosen = false;"
-                //if user has cliked the right answer, then show text that he is right 
-
-                //if user has cliked on the choices that are not the right answer, then show text that he is wrong and wrongAnswers++;
-                //else if he has not clicked on any choice at all tell he is did not answer and unanswered++;
-                //after that if statement change the boolean to "hasChosen === true"
-            }else {
-                myTime = questionTime;
+               //this is where I want my question to be replaced by answer
+                unanswered++;
+                $("#question").html("<h2>Time has run Out! The correct answer is: </h2>" + "<h2>" + questionBank[currentQuestion].answer + "</h2>");
+                $("#choices").empty();
+                myInterval = setInterval(timer, 1000, myTime);//this restarts the timer
+                myCount = 0;//this is to reset the time Remaining back to zero
+                
+            
+            }else if(stopTime === answerTime){//this happens if the the time set for answerTime ends and a new question to appear
+                //this is where I want my question to pop up 
+                myTime = questionTime;//if the the answeTime reaches the stopTime myTime now becomes the question time (which is set to 15)
+                currentQuestion++;
+                $("#choices").empty();//here we empy the choices section to make room for the next set of choices
+                if( currentQuestion === questionBank.length) {//this is for when we run out of questioins and the game ends revealing the stats
+                    //End of game
+                    $("#question").empty();
+                    $("#timeRemaining").html("<p>Right Answers: </p>" + rightAnswers + "<p>Wrong Answers: </p>" + wrongAnswers + "<p>Unanswered: </p>" + unanswered );
+                    clearInterval(myInterval);
+                    $(".btn").show();
+                    button();
+                    
+                    
+                    //stop timer 
+                }else {//this occurs when the answer time runs out to reveal a new question and restart the timer 
+                    questionnaire();//this is to reveal the new question
+                    myInterval = setInterval(timer, 1000, myTime);//this is to restart the timer
+                    myCount = 0; //this is to reset the time Remaining back to zero
+                }
+                
             }
-        myInterval = setInterval(timer, 1000, myTime);
-        myCount = 0;
+            
+            
         }else {
-            myCount++;
+            myCount++; 
         }
 
     };
@@ -87,34 +108,38 @@ $(".btn").on("click", function(){
 
 function questionnaire () {
     
-   $("#question").append(questionBank[currentQuestion].question); //includes the question into the question section in the html
+   $("#question").html("<h2>" + questionBank[currentQuestion].question +"</h2>"); //includes the question into the question section in the html
     
-   
-    wrongChoices[currentQuestion].push('<span id = "answerId">' + currentAnswer + '</span>');
-    
-    
-    for (var i = 0; i <wrongChoices.length; i++) {
-        $("#choices").append('<p class = "myClickableClass">' + wrongChoices[i] +'</p><br>');
-    
-        break;
+    for (var i = 0; i < wrongChoices[currentQuestion].length; i++) {
+        $("#choices").append('<p class = "myClickableClass">' + wrongChoices[currentQuestion][i] +'</p><br>');
         
     }
-    console.log("for loop: ", wrongChoices[i]);
     
+    //these on click functions should go inside the timer function
     $(".myClickableClass").on("click", function () {
-    if(!hasChosen) {
-        if($(this).attr("id") === "answerId") {
+        
+        if ( $(this).html() === questionBank[currentQuestion].answer){
             $("#question").html("<h2>You are correct</h2>");
+            $("#choices").empty();
             rightAnswers++;
-        }else {
-            $("#question").html("<h2>You are wrong</h2>");
-            wrongAnswers++;
+        } else {
+
+            $("#question").html("<h2>You are wrong, the correct answer is :</h2>" + "<h2>" + questionBank[currentQuestion].answer + "</h2>");
+            $("#choices").empty();
+            wrongAnswers++;   
         }
-        hasChosen = true;
-    }
-}) 
+        $(".myClickableClass").off("click");
+        //move on to the next question where question timer will restart
+        clearInterval(myInterval); 
+        myCount= 0;
+        myInterval = setInterval(timer, 1000, answerTime);//this sets the answertime back up
+    });
     
 };
+     
+
+    
+
 
 
 
