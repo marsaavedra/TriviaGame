@@ -40,15 +40,20 @@ var myInterval;
 var myCount;
 myCount = 0;
 
-function button () {
-    $(".btn").on("click", function(){
+
+$(".btn").on("click", function(){
+    $("#timeRemaining").empty();
+    $("#choices").empty();
+    clearInterval(myInterval);
+    currentQuestion = 0;
     myInterval = setInterval(timer, 1000, questionTime);
     questionnaire();
+    myCount = 0;
     $(".btn").hide();//hide after clicked
-})
-};
+});
 
-button();
+
+
 //callling the timer function to begin once the button is clicked
 //$(".btn").on("click", function(){
 //    myInterval = setInterval(timer, 1000, questionTime);
@@ -83,9 +88,9 @@ button();
                     //End of game
                     $("#question").empty();
                     $("#timeRemaining").html("<p>Right Answers: </p>" + rightAnswers + "<p>Wrong Answers: </p>" + wrongAnswers + "<p>Unanswered: </p>" + unanswered );
+                    $("#choices").empty();
                     clearInterval(myInterval);
                     $(".btn").show();
-                    button();
                     
                     
                     //stop timer 
